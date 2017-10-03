@@ -1,0 +1,1 @@
+{"json_class":"Hangman","data":{"platform":" \n    ______  \n    ||   |   \n    ||         \n    ||        \n    ||         \n    ||      \n    ||||||||","word":"adeline\r\n","guessedLetters":["e","a"],"correctLetters":["a","_","e","_","_","_","e"],"wrongGuessCount":0,"gameover":false}}
