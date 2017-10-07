@@ -84,7 +84,64 @@ describe Chess do
       expect(game).to receive(:promptMove)
       game.startGame
     end
+  end
 
+  describe "#promptMove" do
+    it "prompts the user to enter a move" do
+      prompt = "White's move: "
+      allow(game.validMove).to receive(:gets) { "e4" }
+      expect{ game.promptMove }.to output(prompt).to_stdout
+    end
+
+    it "gets the users response" do
+      expect(game).to receive(:gets)
+      game.promptMove
+    end
+
+    it "validates the users response" do
+      expect(game).to receive(:validMove?)
+      game.promptMove
+    end
+  end
+
+  describe "#validMove?" do
+    context "when given a valid move" do
+      it "returns true on a normal move" do
+        expect(game.validMove?("Ne4")).to eq true
+      end
+
+      it "returns true on a pawn move" do
+        expect(game.validMove?("e4")).to eq true
+        expect(game.validMove?("Pe4")).to eq true
+      end
+
+      it "return true on a check" do
+        expect(game.validMove?("e4+")).to eq true
+        expect(game.validMove?("Bb4+")).to eq true
+      end
+
+      it "returns ture on castling" do
+        expect(game.validMove?("o-o")).to eq true
+        expect(game.validMove?("o-o-o")).to eq true
+      end
+
+      it "returns true on pawn captures" do
+        expect(game.validMove?("exd5")).to eq true
+      end
+
+      it "returns true on promotions" do
+        expect(game.validMove?("a8=Q")).to eq true
+        expect(game.validMove?("Ph1=N")).to eq true
+      end
+
+      it "returns true when two of the same piece can go to a square" do
+        expect(game.validMove?("Nd5-e3")).to eq true
+      end
+    end
+
+    context "when given an invalid move" do
+      it " returns false when leading"
+    end
   end
 
 end
