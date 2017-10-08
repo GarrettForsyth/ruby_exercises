@@ -1,4 +1,5 @@
 require "../lib/chess.rb"
+require "../lib/board.rb"
 
 describe Chess do
   let(:game){ Chess.new }
@@ -29,51 +30,9 @@ describe Chess do
     it "it creates a chess board" do
       expect(game.board).to be_an_instance_of(Board)
     end
-
-    it "creates 32 pieces" do
-      expect(game.pieces.length).to eq 32
-    end
-
-    it "creates 16 pieces of each colour" do
-      whiteCount = 0
-      blackCount = 0
-      for i in 0...32 do
-        whiteCount+=1 if game.pieces[i].colour == :white
-        blackCount+=1 if game.pieces[i].colour == :black
-      end
-      expect(whiteCount).to eq 16
-      expect(blackCount).to eq 16
-    end
-
-    it "creates the correct # of pieces for each colour" do
-      def countPieces(piece, expectedCount)
-        whiteCount = 0
-        blackCount = 0
-        for i in 0...32 do
-          p = game.pieces[i]
-          whiteCount += 1 if p.instance_of?(piece) && p.colour == :white
-          blackCount += 1 if p.instance_of?(piece) && p.colour == :black
-        end
-        expect(whiteCount).to eq expectedCount
-        expect(blackCount).to eq expectedCount
-      end
-
-      countPieces(Pawn, 8)
-      countPieces(Rook,2)
-      countPieces(Knight,2)
-      countPieces(Bishop,2)
-      countPieces(Queen,1)
-      countPieces(King,1)
-    end
   end
 
   describe "#startGame" do
-
-    it "places the pieces on their proper starting positions" do
-      game.startGame
-      expect(game.getSquare("a2").occupiedBy).to be_an_instance_of Pawn
-      expect(game.getSquare("a2").occupiedBy.colour).to eq :white
-    end
 
     it "draws the board" do
       expect(game).to receive(:drawBoard)
@@ -89,11 +48,12 @@ describe Chess do
   describe "#promptMove" do
     it "prompts the user to enter a move" do
       prompt = "White's move: "
-      allow(game.validMove).to receive(:gets) { "e4" }
+      allow(game).to receive(:gets) { "e4" }
       expect{ game.promptMove }.to output(prompt).to_stdout
     end
 
     it "gets the users response" do
+      allow(game).to receive(:gets) { "e4" }
       expect(game).to receive(:gets)
       game.promptMove
     end
@@ -140,10 +100,32 @@ describe Chess do
     end
 
     context "when given an invalid move" do
-      it " returns false when leading"
-    end
-  end
+      it " returns on first invalid first character" do
+        expect(game.validMove?("Zd5-e3")).to eq false
+      end
 
+      it " return false on move too far right" do
+        expect(game.validMove?("Ni5")).to eq false
+      end
+
+      it " returns false on a move too far up" do
+        expect(game.validMove?("Na9")).to eq false
+      end
+
+      it " returns false on gibberish" do
+        expect(game.validMove?("iakjdlsfl;k")).to eq false
+      end
+
+      it " returns false on empty input" do
+        expect(game.validMove?("")).to eq false
+      end
+
+      it " returns false with two pawn moves entered" do
+        expect(game.validMove?("e4e4")).to eq false
+
+      end
+    end
+  end 
 end
 
 describe Board do
@@ -151,6 +133,26 @@ describe Board do
 
   it "has 64 squares" do
     expect(board.squares.length).to eq 64
+  end
+
+  describe "#setStaringPosition" do
+    it "creates 32 pieces" do
+      board.setStartingPosition
+      expect(board.pieces.leaves.length).to eq 32
+    end
+
+    it "creates 16 pieces of each colour" do
+      board.setStartingPosition
+      expect(board.pieces[:white].leaves.length).to eq 16
+      expect(board.pieces[:black].leaves.length).to eq 16
+    end
+                                                                         
+  end
+
+  it "places the pieces on their proper starting positions" do
+    board.setPiecesAtStartingPositions
+    expect(board.getSquare("a2").occupiedBy).to be_an_instance_of Pawn
+    expect(board.getSquare("a2").occupiedBy.colour).to eq :white
   end
 end
 
@@ -176,4 +178,15 @@ describe Piece do
     expect(piece.colour).to eq :white
   end
 
+end
+
+class Hash
+  # counts the leaves in the nested hash (counts pieces in piece hash)
+  def leaves
+    leaves = []
+    each_value do |val|
+      val.is_a?(Hash) ? val.leaves.each{|l| leaves << l } : leaves << val
+    end
+    leaves
+  end
 end
