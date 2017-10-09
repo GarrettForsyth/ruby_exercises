@@ -7,4 +7,5 @@ class Move
     @to = to
     @from = from
   end
+
 end

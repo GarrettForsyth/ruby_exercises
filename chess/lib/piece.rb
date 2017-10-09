@@ -9,6 +9,14 @@ class Piece
 end
 
 class Pawn < Piece
+
+  attr_accessor :firstMove
+
+  def initialize colour, firstMove=false
+    @firstMove = firstMove
+    super(colour)
+  end
+
   def draw
     if @colour == :black
       return "♙"

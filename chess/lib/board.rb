@@ -169,12 +169,12 @@ class Board
     c2 = parse(coord2)
     # moving 'up' the board
     if c2 > c1 
-      (c1+8).step(c2,8) { |i|squares << unParseToCoord(i) }
+      (c1+8).step(c2-8,8) { |i|squares << unParseToCoord(i) }
       return squares
     # moving 'down' the board 
     else
       # -8 to disclude the first square (that the piece is on)
-      (c1-8).step(c2, -8) { |i|squares << unParseToCoord(i) }
+      (c1-8).step(c2+8, -8) { |i|squares << unParseToCoord(i) }
       return squares
     end
   end
@@ -185,10 +185,10 @@ class Board
     c2 = parse(coord2)
 
     if c2 > c1 
-      (c1+1).step(c2,1) { |i|squares << unParseToCoord(i) }
+      (c1+1).step(c2-1,1) { |i|squares << unParseToCoord(i) }
       return squares
     else
-      (c1-1).step(c2,-1) { |i| squares << unParseToCoord(i) }
+      (c1-1).step(c2+1,-1) { |i| squares << unParseToCoord(i) }
       return squares
     end
   end
@@ -199,10 +199,10 @@ class Board
     c2 = parse(coord2)
 
     if c2 > c1
-      (c1+9).step(c2,9) {|i| squares << unParseToCoord(i) } 
+      (c1+9).step(c2-9,9) {|i| squares << unParseToCoord(i) } 
       return squares
     else
-      (c1-9).step(c2,-9) {|i| squares << unParseToCoord(i) }
+      (c1-9).step(c2+9,-9) {|i| squares << unParseToCoord(i) }
       return squares
     end
   end
@@ -213,10 +213,10 @@ class Board
     c2 = parse(coord2)
                                                              
     if c2 > c1
-      (c1+7).step(c2,7) {|i| squares << unParseToCoord(i) } 
+      (c1+7).step(c2-7,7) {|i| squares << unParseToCoord(i) } 
       return squares
     else
-      (c1-7).step(c2,-7) {|i| squares << unParseToCoord(i) }
+      (c1-7).step(c2+7,-7) {|i| squares << unParseToCoord(i) }
       return squares
     end
   end

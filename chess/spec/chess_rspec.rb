@@ -127,43 +127,43 @@ describe Board do
 
   describe "#getSquaresInBetween" do
     it "returns an array of squares between a1 and a8" do
-      expecetdSquares = ["a2","a3","a4","a5","a6","a7","a8"]
+      expecetdSquares = ["a2","a3","a4","a5","a6","a7",]
       expect(board.getSquaresInbetween("a1","a8")).to eq expecetdSquares
     end
 
     it "returns an array of squares between a8 and a1" do
-      expecetdSquares = ["a7","a6","a5","a4","a3","a2","a1"]
+      expecetdSquares = ["a7","a6","a5","a4","a3","a2",]
       expect(board.getSquaresInbetween("a8","a1")).to eq expecetdSquares
     end
 
 
     it "return sn array of squares between a1 and h1" do
-      expecetdSquares = ["b1","c1","d1","e1","f1","g1","h1"]
+      expecetdSquares = ["b1","c1","d1","e1","f1","g1",]
       expect(board.getSquaresInbetween("a1","h1")).to eq expecetdSquares
     end
 
     it "returns an array of squares between h1 and a1" do
-      expecetdSquares = ["g1","f1","e1","d1","c1","b1","a1"]             
+      expecetdSquares = ["g1","f1","e1","d1","c1","b1",]             
       expect(board.getSquaresInbetween("h1","a1")).to eq expecetdSquares
     end
 
     it "returns an array of squares between a1 and h8" do
-      expecetdSquares = ["b2","c3","d4","e5","f6","g7","h8"]             
+      expecetdSquares = ["b2","c3","d4","e5","f6","g7",]             
       expect(board.getSquaresInbetween("a1","h8")).to eq expecetdSquares
     end
 
     it "returns an array of squares between h8 and a1" do
-      expecetdSquares = ["g7","f6","e5","d4","c3","b2","a1"]             
+      expecetdSquares = ["g7","f6","e5","d4","c3","b2",]             
       expect(board.getSquaresInbetween("h8","a1")).to eq expecetdSquares
     end
 
     it "returns an array with squares between h1 and a8" do
-      expecetdSquares = ["g2","f3","e4","d5","c6","b7","a8"]             
+      expecetdSquares = ["g2","f3","e4","d5","c6","b7",]             
       expect(board.getSquaresInbetween("h1","a8")).to eq expecetdSquares
     end
 
     it "returns array of squares between a8 and h1" do
-      expecetdSquares = ["b7","c6","d5","e4","f3","g2","h1"]              
+      expecetdSquares = ["b7","c6","d5","e4","f3","g2",]              
       expect(board.getSquaresInbetween("a8","h1")).to eq expecetdSquares
     end
   end
@@ -198,9 +198,162 @@ describe ChessRules do
   let(:board) { Board.new      }
 
   describe "#isValidPawnMove?" do
-    it "returns true when pawns move foward to unoccupied square" do
+    it "returns true when white pawns move foward one to unoccupied square" do
       board.setSquare("a2", Pawn.new(:white))
-      expect(rules.isValidPawnMove?(Move.new "a4", board)).to eq true
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"a3","a2"),
+                                             board)).to eq true
+    end
+
+    it "returns true when black pawns move foward one to unoccupied square" do
+      board.setSquare("a7", Pawn.new(:black))
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black),"a6","a7"),
+                                             board)).to eq true
+    end
+
+    it "returns false when white pawns move back one to unoccupied square" do
+      board.setSquare("a4", Pawn.new(:white))
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"a3","a4"),
+                                             board)).to eq false
+    end
+
+    it "returns false when black pawns move back one to unoccupied square" do
+      board.setSquare("a5", Pawn.new(:black))
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black),"a6","a5"),
+                                             board)).to eq false
+    end
+
+    it "returns false when white pawns move foward one to occupied square" do  
+      board.setSquare("a3", Pawn.new(:black))
+      board.setSquare("a2", Pawn.new(:white))
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"a3","a2"),
+                                             board)).to eq false
+    end
+
+    it "returns false when black pawns foward one to occupied square" do  
+      board.setSquare("a6", Pawn.new(:black))                                   
+      board.setSquare("a7", Pawn.new(:black))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black),"a6","a7"),
+                                             board)).to eq false
+    end
+
+    it "returns false when black pawns foward 2+ squares" do  
+      board.setSquare("a6", Pawn.new(:black))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black),"a2","a6"),
+                                             board)).to eq false
+    end
+
+    it "returns false when white pawns foward 2+ squares" do  
+      board.setSquare("a2", Pawn.new(:white))                                   
+    expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"a6","a2"), 
+                                             board)).to eq false
+    end
+
+    it "returns true when white pawns foward 2 squares on first move" do  
+      board.setSquare("a2", Pawn.new(:white,true))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white,true),"a4","a2"), 
+                                             board)).to eq true
+    end
+
+    it "returns true when black pawns foward 2 squares on first move" do  
+      board.setSquare("a7", Pawn.new(:black,true))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black,true),"a5","a7"), 
+                                             board)).to eq true
+    end
+
+    it "returns false when white pawns foward 2 squares on not first move" do         
+      board.setSquare("a3", Pawn.new(:white))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"a5","a3"), 
+                                             board)).to eq false
+    end
+
+    it "returns false when black pawns foward 2 squares on not first move" do  
+      board.setSquare("a6", Pawn.new(:black))                                   
+    expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black),"a4","a6"), 
+                                             board)).to eq false
+    end
+
+    it "returns false when white pawns foward 2 squares through a piece" do  
+      board.setSquare("a3", Pawn.new(:white))                                   
+      board.setSquare("a2", Pawn.new(:white))                                   
+    expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"a4","a2"), 
+                                             board)).to eq false
+    end
+
+    it "returns false when black pawns foward 2 squares through a piece" do  
+      board.setSquare("a7", Pawn.new(:black))                                   
+      board.setSquare("a6", Pawn.new(:white))                                   
+    expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black),"a5","a7"), 
+                                             board)).to eq false
+    end                                                            
+
+    it "returns true if one move foward diagonally pos for a capture" do
+      board.setSquare("a2", Pawn.new(:white))                                   
+      board.setSquare("b3", Pawn.new(:black))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"b3","a2"), 
+                                             board)).to eq true
+    end
+
+    it "returns true if one move foward diagonally neg for a capture" do
+      board.setSquare("a3", Pawn.new(:black))                                   
+      board.setSquare("b2", Pawn.new(:white))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"a3","b2"), 
+                                             board)).to eq true
+    end
+
+    it "returns false if one move foward diagonally neg for a non capture" do
+      board.setSquare("b2", Pawn.new(:white))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"a3","b2"), 
+                                             board)).to eq false
+    end
+
+    it "returns true if one move foward diagonally pos for a capture for black" do
+      board.setSquare("a6", Pawn.new(:white))                                   
+      board.setSquare("b7", Pawn.new(:black))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black),"a6","b7"), 
+                                             board)).to eq true
+    end
+                                                                                 
+    it "returns true if one move foward diagonally neg for a capture for black" do
+      board.setSquare("a7", Pawn.new(:black))                                   
+      board.setSquare("b6", Pawn.new(:white))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black),"b6","a7"), 
+                                             board)).to eq true
+    end
+                                                                                 
+    it "returns false if one move foward diagonally neg for a non capture for black" do
+      board.setSquare("b7", Pawn.new(:white))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"a6","b7"), 
+                                             board)).to eq false
+    end
+
+    it "returns false if white tries to capture own piece" do 
+      board.setSquare("b2", Pawn.new(:white))                                   
+      board.setSquare("c3", Pawn.new(:white))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:white),"c3","b2"), 
+                                             board)).to eq false
+    end
+
+    it "returns false if black tries to capture own piece " do
+      board.setSquare("b7", Pawn.new(:black))                                   
+      board.setSquare("c6", Pawn.new(:black))                                   
+      expect(rules.isValidPawnMove?(Move.new(Pawn.new(:black),"c6","b7"), 
+                                             board)).to eq false
+    end
+
+    
+    context  "returns array of moves with the .from attribute 
+                           of move inferred from pieces on the board" do
+      it " returns 2 knight moves " do
+        expectedFroms = [ "b1", "g1"]
+        board.setStartingPosition
+        possibleFroms = []
+        rules.getPossibleMoves(Move.new(Knight.new(:white),"c3"),
+                               board).each do |x|
+          possibleFroms << x.from
+        end
+        expect(possibleFroms).to eq expectedFroms 
+      end
+
     end
   end
 end
