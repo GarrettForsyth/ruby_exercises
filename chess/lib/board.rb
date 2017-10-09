@@ -63,6 +63,12 @@ class Board
    row = coordiante[1].to_i - 1
    col + row*NUMBER_OF_COLUMNS 
   end
+  
+  def unParseToCoord(squareNum)
+    num = squareNum/8 + 1
+    let = ((squareNum % 8)+97).chr
+    return let + num.to_s
+  end
 
   def draw
     for i in 7.downto(0) do
@@ -139,6 +145,81 @@ class Board
     end
   end
 
+  # Gets the coordinates of the squares between (coord1, coord2]
+  def getSquaresInbetween(coord1, coord2)
+    if coord1[0] == coord2[0] # same column
+      return getSquaresInbetweenColumn(coord1,coord2)
+
+    elsif coord1[1] == coord2[1] # same row
+      return getSquaresInbetweenRow(coord1,coord2)
+
+    # if the slope of the squres is +1 --> positive diagonal
+    elsif ((coord2[0].ord-coord1[0].ord)) == (coord2[1].to_i-coord1[1].to_i)
+      return getSquaresInbeteweenPositiveDiagonal(coord1,coord2)
+
+    # if the slope of the squres is -1 --> positive diagonal
+    elsif ((coord2[0].ord-coord1[0].ord)) == -(coord2[1].to_i-coord1[1].to_i)
+      return getSquaresInbeteweenNegativeDiagonal(coord1,coord2)
+    end
+  end
+
+  def getSquaresInbetweenColumn(coord1,coord2)
+    squares = []
+    c1 = parse(coord1)
+    c2 = parse(coord2)
+    # moving 'up' the board
+    if c2 > c1 
+      (c1+8).step(c2,8) { |i|squares << unParseToCoord(i) }
+      return squares
+    # moving 'down' the board 
+    else
+      # -8 to disclude the first square (that the piece is on)
+      (c1-8).step(c2, -8) { |i|squares << unParseToCoord(i) }
+      return squares
+    end
+  end
+
+  def getSquaresInbetweenRow(coord1,coord2)
+    squares = []
+    c1 = parse(coord1)
+    c2 = parse(coord2)
+
+    if c2 > c1 
+      (c1+1).step(c2,1) { |i|squares << unParseToCoord(i) }
+      return squares
+    else
+      (c1-1).step(c2,-1) { |i| squares << unParseToCoord(i) }
+      return squares
+    end
+  end
+
+  def getSquaresInbeteweenPositiveDiagonal(coord1,coord2)
+    squares = []
+    c1 = parse(coord1)
+    c2 = parse(coord2)
+
+    if c2 > c1
+      (c1+9).step(c2,9) {|i| squares << unParseToCoord(i) } 
+      return squares
+    else
+      (c1-9).step(c2,-9) {|i| squares << unParseToCoord(i) }
+      return squares
+    end
+  end
+
+  def getSquaresInbeteweenNegativeDiagonal(coord1, coord2)
+    squares = []
+    c1 = parse(coord1)
+    c2 = parse(coord2)
+                                                             
+    if c2 > c1
+      (c1+7).step(c2,7) {|i| squares << unParseToCoord(i) } 
+      return squares
+    else
+      (c1-7).step(c2,-7) {|i| squares << unParseToCoord(i) }
+      return squares
+    end
+  end
 end
 
 # This class models a single square ona  chess board
