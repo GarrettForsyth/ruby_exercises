@@ -583,6 +583,65 @@ describe ChessRules do
       expect(rules.isValidBishopMove?(m2, board)).to eq true
     end
   end
+
+
+  describe "#isValidKingMove?" do
+    it "can move in one space in any direction" do
+      board.setSquare("e4", King.new(:white))
+      m1 = Move.new(board.getPieceAt("e4"), "e5","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "f5","e4")
+      m3 = Move.new(board.getPieceAt("e4"), "d5","e4")
+      m4 = Move.new(board.getPieceAt("e4"), "e3","e4")
+      m5 = Move.new(board.getPieceAt("e4"), "f3","e4")
+      m6 = Move.new(board.getPieceAt("e4"), "d3","e4")
+      m7 = Move.new(board.getPieceAt("e4"), "d4","e4")
+      m8 = Move.new(board.getPieceAt("e4"), "f4","e4")
+      
+      expect(rules.isValidKingMove?(m1, board)).to eq true
+      expect(rules.isValidKingMove?(m2, board)).to eq true
+      expect(rules.isValidKingMove?(m3, board)).to eq true
+      expect(rules.isValidKingMove?(m4, board)).to eq true
+      expect(rules.isValidKingMove?(m5, board)).to eq true
+      expect(rules.isValidKingMove?(m6, board)).to eq true
+      expect(rules.isValidKingMove?(m7, board)).to eq true
+      expect(rules.isValidKingMove?(m8, board)).to eq true
+    end
+
+    it "can't move more than one in any direction"  do
+      board.setSquare("e4", King.new(:white))
+      m1 = Move.new(board.getPieceAt("e4"), "e6","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "g6","e4")
+      m3 = Move.new(board.getPieceAt("e4"), "c6","e4")
+      m4 = Move.new(board.getPieceAt("e4"), "e2","e4")
+      m5 = Move.new(board.getPieceAt("e4"), "g2","e4")
+      m6 = Move.new(board.getPieceAt("e4"), "c2","e4")
+      m7 = Move.new(board.getPieceAt("e4"), "c4","e4")
+      m8 = Move.new(board.getPieceAt("e4"), "g4","e4")
+      
+      expect(rules.isValidKingMove?(m1, board)).to eq false
+      expect(rules.isValidKingMove?(m2, board)).to eq false
+      expect(rules.isValidKingMove?(m3, board)).to eq false
+      expect(rules.isValidKingMove?(m4, board)).to eq false
+      expect(rules.isValidKingMove?(m5, board)).to eq false
+      expect(rules.isValidKingMove?(m6, board)).to eq false
+      expect(rules.isValidKingMove?(m7, board)).to eq false
+      expect(rules.isValidKingMove?(m8, board)).to eq false
+    end
+
+    it "can capture enemy pieces" do
+      board.setSquare("e4", King.new(:white))
+      board.setSquare("e5", Pawn.new(:black))
+      m1 = Move.new(board.getPieceAt("e4"), "e5","e4")
+      expect(rules.isValidKingMove?(m1, board)).to eq true
+    end
+
+    it "cannot capture its own pieces" do
+      board.setSquare("e4", King.new(:white))
+      board.setSquare("e5", Pawn.new(:white))
+      m1 = Move.new(board.getPieceAt("e4"), "e5","e4")
+      expect(rules.isValidKingMove?(m1, board)).to eq false
+    end
+  end
     
   context  "returns array of moves with the .from attribute 
                          of move inferred from pieces on the board" do

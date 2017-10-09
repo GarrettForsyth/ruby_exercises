@@ -112,6 +112,33 @@ class ChessRules
     end
   end
 
+  def isValidQueenMove?(move, board)
+    possibleMoves = getPossibleMoves(move, board)
+    possibleMoves.each do |move|
+      if (isValidRookMove || isValidBishopMove)
+        return true
+      else
+        return false
+      end
+    end
+  end
+
+  def isValidKingMove?(move, board)
+    possibleMoves = getPossibleMoves(move, board) 
+    possibleMoves.each do |move|
+      if( ((move.to[0].ord - move.from[0].ord).between?(-1,1))   &&
+          ((move.to[1].to_i - move.from[1].to_i).between?(-1,1)) &&
+          # can only land on empty squares or capture
+          (board.getSquare(move.to).occupied? == false || 
+          (board.getSquare(move.to).occupied? == true &&
+          board.getSquare(move.to).occupancy.colour != move.piece.colour)))
+        return true
+      else
+        return false
+      end
+    end
+  end
+
   # Returns true if there is a piece blocking the move
   def impeded?(move, board)
     coords = board.getSquaresInbetween(move.from,move.to)
