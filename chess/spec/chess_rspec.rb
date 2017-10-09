@@ -464,70 +464,125 @@ describe ChessRules do
         expect(rules.isValidRookMove?(m2, board)).to eq false
       end
     end
+  end
 
-    describe "#isValidKnightMove?" do
-      it "returns true when moving in L" do
-        board.setSquare("e4", Knight.new(:black))              
-        m1 = Move.new(board.getPieceAt("e4"), "c3","e4")
-        m2 = Move.new(board.getPieceAt("e4"), "g3","e4")
-        m3 = Move.new(board.getPieceAt("e4"), "d6","e4")
-        m4 = Move.new(board.getPieceAt("e4"), "f6","e4")
-        m5 = Move.new(board.getPieceAt("e4"), "g5","e4")
-        m6 = Move.new(board.getPieceAt("e4"), "c5","e4")
-        m7 = Move.new(board.getPieceAt("e4"), "d2","e4")
-        m8 = Move.new(board.getPieceAt("e4"), "f2","e4")
+  describe "#isValidKnightMove?" do
+    it "returns true when moving in L" do
+      board.setSquare("e4", Knight.new(:black))              
+      m1 = Move.new(board.getPieceAt("e4"), "c3","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "g3","e4")
+      m3 = Move.new(board.getPieceAt("e4"), "d6","e4")
+      m4 = Move.new(board.getPieceAt("e4"), "f6","e4")
+      m5 = Move.new(board.getPieceAt("e4"), "g5","e4")
+      m6 = Move.new(board.getPieceAt("e4"), "c5","e4")
+      m7 = Move.new(board.getPieceAt("e4"), "d2","e4")
+      m8 = Move.new(board.getPieceAt("e4"), "f2","e4")
 
 
-        expect(rules.isValidKnighMove?(m1, board)).to eq true
-        expect(rules.isValidKnighMove?(m2, board)).to eq true
-        expect(rules.isValidKnighMove?(m3, board)).to eq true
-        expect(rules.isValidKnighMove?(m4, board)).to eq true
-        expect(rules.isValidKnighMove?(m5, board)).to eq true
-        expect(rules.isValidKnighMove?(m6, board)).to eq true
-        expect(rules.isValidKnighMove?(m7, board)).to eq true
-        expect(rules.isValidKnighMove?(m8, board)).to eq true
-      end
+      expect(rules.isValidKnightMove?(m1, board)).to eq true
+      expect(rules.isValidKnightMove?(m2, board)).to eq true
+      expect(rules.isValidKnightMove?(m3, board)).to eq true
+      expect(rules.isValidKnightMove?(m4, board)).to eq true
+      expect(rules.isValidKnightMove?(m5, board)).to eq true
+      expect(rules.isValidKnightMove?(m6, board)).to eq true
+      expect(rules.isValidKnightMove?(m7, board)).to eq true
+      expect(rules.isValidKnightMove?(m8, board)).to eq true
+    end
 
-      it "returns false when moving in row" do
-        board.setSquare("e4", Knight.new(:black))              
-        m1 = Move.new(board.getPieceAt("e4"), "e5","e4")
-        m2 = Move.new(board.getPieceAt("e4"), "e3","e4")
-        expect(rules.isValidKnighMove?(m1, board)).to eq false
-        expect(rules.isValidKnighMove?(m2, board)).to eq false
-      end
-      
-      it "returns false when moving in col" do
-        board.setSquare("e4", Knight.new(:black))              
-        m1 = Move.new(board.getPieceAt("e4"), "a4","e4")
-        m2 = Move.new(board.getPieceAt("e4"), "h4","e4")
-        expect(rules.isValidKnighMove?(m1, board)).to eq false
-        expect(rules.isValidKnighMove?(m2, board)).to eq false
-      end
+    it "returns false when moving in row" do
+      board.setSquare("e4", Knight.new(:black))              
+      m1 = Move.new(board.getPieceAt("e4"), "e5","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "e3","e4")
+      expect(rules.isValidKnightMove?(m1, board)).to eq false
+      expect(rules.isValidKnightMove?(m2, board)).to eq false
+    end
+    
+    it "returns false when moving in col" do
+      board.setSquare("e4", Knight.new(:black))              
+      m1 = Move.new(board.getPieceAt("e4"), "a4","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "h4","e4")
+      expect(rules.isValidKnightMove?(m1, board)).to eq false
+      expect(rules.isValidKnightMove?(m2, board)).to eq false
+    end
 
-      it "returns false when moving in diagonal" do
-        board.setSquare("e4", Knight.new(:black))              
-        m1 = Move.new(board.getPieceAt("e4"), "f3","e4")
-        m2 = Move.new(board.getPieceAt("e4"), "d5","e4")
-        expect(rules.isValidKnighMove?(m1, board)).to eq false
-        expect(rules.isValidKnighMove?(m2, board)).to eq false
-      end
+    it "returns false when moving in diagonal" do
+      board.setSquare("e4", Knight.new(:black))              
+      m1 = Move.new(board.getPieceAt("e4"), "f3","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "d5","e4")
+      expect(rules.isValidKnightMove?(m1, board)).to eq false
+      expect(rules.isValidKnightMove?(m2, board)).to eq false
+    end
 
-      it "returns false when moving into its own piece" do
-        board.setSquare("e4", Knight.new(:black))              
-        board.setSquare("c3", Knight.new(:black))              
-        m1 = Move.new(board.getPieceAt("e4"), "c3","e4")
-        expect(rules.isValidKnighMove?(m1, board)).to eq false
-      end
+    it "returns false when moving into its own piece" do
+      board.setSquare("e4", Knight.new(:black))              
+      board.setSquare("c3", Knight.new(:black))              
+      m1 = Move.new(board.getPieceAt("e4"), "c3","e4")
+      expect(rules.isValidKnightMove?(m1, board)).to eq false
+    end
 
-      it "returns true when capturing"  do
-        board.setSquare("e4", Knight.new(:black))              
-        board.setSquare("c3", Knight.new(:white))              
-        m1 = Move.new(board.getPieceAt("e4"), "c3","e4")
-        expect(rules.isValidKnighMove?(m1, board)).to eq true
-      end
+    it "returns true when capturing"  do
+      board.setSquare("e4", Knight.new(:black))              
+      board.setSquare("c3", Knight.new(:white))              
+      m1 = Move.new(board.getPieceAt("e4"), "c3","e4")
+      expect(rules.isValidKnightMove?(m1, board)).to eq true
     end
   end
 
+  describe "#isvalidBishopMove?" do
+    it "returns false when moving in row" do                  
+      board.setSquare("e4", Bishop.new(:black))              
+      m1 = Move.new(board.getPieceAt("e4"), "e5","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "e3","e4")
+      expect(rules.isValidBishopMove?(m1, board)).to eq false
+      expect(rules.isValidBishopMove?(m2, board)).to eq false
+    end
+    
+    it "returns false when moving in col" do
+      board.setSquare("e4", Bishop.new(:black))              
+      m1 = Move.new(board.getPieceAt("e4"), "a4","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "h4","e4")
+      expect(rules.isValidBishopMove?(m1, board)).to eq false
+      expect(rules.isValidBishopMove?(m2, board)).to eq false
+    end
+
+    it "returns true when moving in diagonal" do
+      board.setSquare("e4", Bishop.new(:black))              
+      m1 = Move.new(board.getPieceAt("e4"), "f3","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "d5","e4")
+      expect(rules.isValidBishopMove?(m1, board)).to eq true
+      expect(rules.isValidBishopMove?(m2, board)).to eq true
+    end
+
+    it "returns false when moving through a piece" do
+      board.setSquare("e4", Bishop.new(:black))               
+      board.setSquare("c6", Bishop.new(:black))               
+      board.setSquare("f3", Bishop.new(:white))               
+      m1 = Move.new(board.getPieceAt("e4"), "h1","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "a8","e4")
+      expect(rules.isValidBishopMove?(m1, board)).to eq false
+      expect(rules.isValidBishopMove?(m2, board)).to eq false
+    end
+
+    it "returns false when moving into it's own piece" do
+      board.setSquare("e4", Bishop.new(:black))               
+      board.setSquare("c6", Bishop.new(:black))               
+      board.setSquare("f3", Bishop.new(:black))               
+      m1 = Move.new(board.getPieceAt("e4"), "c6","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "f3","e4")
+      expect(rules.isValidBishopMove?(m1, board)).to eq false
+      expect(rules.isValidBishopMove?(m2, board)).to eq false
+    end
+
+    it "returns true when capturing an enemy piece" do
+      board.setSquare("e4", Bishop.new(:black))               
+      board.setSquare("c6", Bishop.new(:white))               
+      board.setSquare("f3", Bishop.new(:white))               
+      m1 = Move.new(board.getPieceAt("e4"), "c6","e4")
+      m2 = Move.new(board.getPieceAt("e4"), "f3","e4")
+      expect(rules.isValidBishopMove?(m1, board)).to eq true
+      expect(rules.isValidBishopMove?(m2, board)).to eq true
+    end
+  end
     
   context  "returns array of moves with the .from attribute 
                          of move inferred from pieces on the board" do

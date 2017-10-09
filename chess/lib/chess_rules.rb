@@ -66,7 +66,7 @@ class ChessRules
     end
   end
 
-  def isValidKnighMove?(move, board)
+  def isValidKnightMove?(move, board)
     possibleMoves = getPossibleMoves(move, board)
 
     possibleMoves.each do |move|
@@ -85,6 +85,27 @@ class ChessRules
           board.getSquare(move.to).occupancy.colour != move.piece.colour)))
         return true
 
+      else
+        return false
+      end
+    end
+  end
+
+  def isValidBishopMove?(move, board)
+    possibleMoves = getPossibleMoves(move, board)
+
+    possibleMoves.each do |move|
+
+          # Enforce diagonal i.e. rise == run 
+      if( ((move.to[0].ord - move.from[0].ord).abs == 
+            (move.to[1].to_i - move.from[1].to_i).abs) &&
+
+           (not impeded?(move, board)) && 
+           # can only land on empty squares or capture
+           (board.getSquare(move.to).occupied? == false || 
+           (board.getSquare(move.to).occupied? == true &&
+           board.getSquare(move.to).occupancy.colour != move.piece.colour)))
+        return true
       else
         return false
       end
