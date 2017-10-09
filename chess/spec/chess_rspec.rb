@@ -340,21 +340,146 @@ describe ChessRules do
                                              board)).to eq false
     end
 
-    
-    context  "returns array of moves with the .from attribute 
-                           of move inferred from pieces on the board" do
-      it " returns 2 knight moves " do
-        expectedFroms = [ "b1", "g1"]
-        board.setStartingPosition
-        possibleFroms = []
-        rules.getPossibleMoves(Move.new(Knight.new(:white),"c3"),
-                               board).each do |x|
-          possibleFroms << x.from
-        end
-        expect(possibleFroms).to eq expectedFroms 
+  end
+
+
+  describe "#isValidRookMove?" do
+    it "returns true when rook moves in a row" do
+      board.setSquare("e1", Rook.new(:white))
+      board.setSquare("e8", Rook.new(:black))
+      m1 = Move.new(board.getPieceAt("e1"), "a1", "e1")
+      m2 = Move.new(board.getPieceAt("e1"), "h1", "e1")
+      m3 = Move.new(board.getPieceAt("e8"), "h8", "e8")
+      m4 = Move.new(board.getPieceAt("e8"), "a8", "e8")
+
+      expect(rules.isValidRookMove?(m1, board)).to eq true
+      expect(rules.isValidRookMove?(m2, board)).to eq true
+      expect(rules.isValidRookMove?(m3, board)).to eq true
+      expect(rules.isValidRookMove?(m4, board)).to eq true
+    end
+
+    it "returns true when rook moves in column" do
+      board.setSquare("e4", Rook.new(:white))
+      board.setSquare("d5", Rook.new(:black))
+      m1 = Move.new(board.getPieceAt("e4"), "e1", "e4")
+      m2 = Move.new(board.getPieceAt("e4"), "e8", "e4")
+      m3 = Move.new(board.getPieceAt("d5"), "d1", "d5")
+      m4 = Move.new(board.getPieceAt("d5"), "d8", "d5")
+                                                          
+      expect(rules.isValidRookMove?(m1, board)).to eq true
+      expect(rules.isValidRookMove?(m2, board)).to eq true
+      expect(rules.isValidRookMove?(m3, board)).to eq true
+      expect(rules.isValidRookMove?(m4, board)).to eq true
+    end
+
+    it "returns false when the rook moves in a diagonal" do
+      board.setSquare("e4", Rook.new(:white))
+      board.setSquare("d5", Rook.new(:black))
+      m1 = Move.new(board.getPieceAt("e4"), "h1", "e4")
+      m2 = Move.new(board.getPieceAt("e4"), "a8", "e4")
+      m3 = Move.new(board.getPieceAt("d5"), "a1", "d5")
+      m4 = Move.new(board.getPieceAt("d5"), "h8", "d5")
+                                                          
+      expect(rules.isValidRookMove?(m1, board)).to eq false
+      expect(rules.isValidRookMove?(m2, board)).to eq false
+      expect(rules.isValidRookMove?(m3, board)).to eq false
+      expect(rules.isValidRookMove?(m4, board)).to eq false
+    end
+
+    context "returns false when rook moves through a piece" do
+      it " on horizontal rook moves" do
+        board.setSquare("e1", Rook.new(:white))
+        board.setSquare("e8", Rook.new(:black))
+
+
+        board.setSquare("c8", Bishop.new(:white))
+        board.setSquare("f8", Bishop.new(:black))
+        board.setSquare("c1", Bishop.new(:white))
+        board.setSquare("f1", Bishop.new(:black))
+        m1 = Move.new(board.getPieceAt("e1"), "a1", "e1")
+        m2 = Move.new(board.getPieceAt("e1"), "h1", "e1")
+        m3 = Move.new(board.getPieceAt("e8"), "h8", "e8")
+        m4 = Move.new(board.getPieceAt("e8"), "a8", "e8")
+                                                             
+        expect(rules.isValidRookMove?(m1, board)).to eq false
+        expect(rules.isValidRookMove?(m2, board)).to eq false
+        expect(rules.isValidRookMove?(m3, board)).to eq false
+        expect(rules.isValidRookMove?(m4, board)).to eq false
       end
 
+      it " for vertical rook moves" do
+        board.setSquare("e4", Rook.new(:white))
+        board.setSquare("d5", Rook.new(:black))
+
+        board.setSquare("d3", Knight.new(:black))
+        board.setSquare("d6", Knight.new(:white))
+        board.setSquare("e6", Knight.new(:white))
+        board.setSquare("e3", Knight.new(:black))
+        m1 = Move.new(board.getPieceAt("e4"), "e1", "e4")
+        m2 = Move.new(board.getPieceAt("e4"), "e8", "e4")
+        m3 = Move.new(board.getPieceAt("d5"), "d1", "d5")
+        m4 = Move.new(board.getPieceAt("d5"), "d8", "d5")
+                                                            
+        expect(rules.isValidRookMove?(m1, board)).to eq false
+        expect(rules.isValidRookMove?(m2, board)).to eq false
+      end
+
+      it "returns true when taking horizontally" do
+        board.setSquare("a1", Rook.new(:white))              
+        board.setSquare("h1", Rook.new(:black))
+        m1 = Move.new(board.getPieceAt("a1"), "h1", "a1")
+        m2 = Move.new(board.getPieceAt("h1"), "a1", "h1")
+                                                             
+        expect(rules.isValidRookMove?(m1, board)).to eq true
+        expect(rules.isValidRookMove?(m2, board)).to eq true
+      end
+
+      it "returns true when taking vertically" do
+        board.setSquare("d8", Rook.new(:white))              
+        board.setSquare("d1", Rook.new(:black))
+        m1 = Move.new(board.getPieceAt("d8"), "d1", "d8")
+        m2 = Move.new(board.getPieceAt("d1"), "d8", "d1")
+                                                             
+        expect(rules.isValidRookMove?(m1, board)).to eq true
+        expect(rules.isValidRookMove?(m2, board)).to eq true
+      end
+
+      it "returns false when taking own piece horizontally" do
+        board.setSquare("a1", Rook.new(:white))              
+        board.setSquare("h1", Rook.new(:white))
+        m1 = Move.new(board.getPieceAt("a1"), "h1", "a1")
+        m2 = Move.new(board.getPieceAt("h1"), "a1", "h1")
+                                                             
+        expect(rules.isValidRookMove?(m1, board)).to eq false
+        expect(rules.isValidRookMove?(m2, board)).to eq false
+      end
+
+      it "returns false when taking own piece vertically" do
+        board.setSquare("d1", Rook.new(:black))              
+        board.setSquare("d8", Rook.new(:black))
+        m1 = Move.new(board.getPieceAt("d1"), "d8", "a1")
+        m2 = Move.new(board.getPieceAt("d8"), "d1", "d8")
+                                                             
+        expect(rules.isValidRookMove?(m1, board)).to eq false
+        expect(rules.isValidRookMove?(m2, board)).to eq false
+      end
     end
+  end
+
+    
+  context  "returns array of moves with the .from attribute 
+                         of move inferred from pieces on the board" do
+    it " returns 2 knight moves " do
+      expectedFroms = [ "b1", "g1"]
+      board.setStartingPosition
+      possibleFroms = []
+      rules.getPossibleMoves(Move.new(Knight.new(:white),"c3"),
+                             board).each do |x|
+        possibleFroms << x.from
+      end
+      expect(possibleFroms).to eq expectedFroms 
+    end
+
   end
 end
 

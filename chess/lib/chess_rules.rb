@@ -46,12 +46,33 @@ class ChessRules
         return false
       end
     end
-    # one move ahead:
-
-
-    
-    
   end
+
+  def isValidRookMove?(move, board)
+    possibleMoves = getPossibleMoves(move,board)
+
+    possibleMoves.each do |move|
+      if( (move.to[0] == move.from[0] || move.to[1] == move.from[1]) && ## same row/column
+          (not impeded?(move, board)) && 
+          (board.getSquare(move.to).occupied? == false || 
+          (board.getSquare(move.to).occupied? == true &&
+          board.getSquare(move.to).occupancy.colour != move.piece.colour)))
+        return true
+      else
+        return false
+      end
+    end
+  end
+
+  # Returns true if there is a piece blocking the move
+  def impeded?(move, board)
+    coords = board.getSquaresInbetween(move.from,move.to)
+    coords.each do |coord|
+      return true if board.getSquare(coord).occupied?
+    end
+    return false
+  end
+
 
   # Returns a list of possible moves that move.piece could make on board 
   def getPossibleMoves(move, board)

@@ -53,6 +53,10 @@ class Board
     @squares[index]
   end
 
+  def getPieceAt(coordiante)
+    getSquare(coordiante).occupancy
+  end
+
   def setSquare(coordiante, piece)
     index = parse(coordiante)
     @squares[index].occupancy = piece
