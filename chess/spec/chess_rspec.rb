@@ -678,64 +678,76 @@ end
 describe MoveParser do
   let (:parser) { MoveParser.new}
 
-  describe "#validMoveFormat?" do                                              
+  describe "#parseMove" do                                              
     context "when given a valid move" do
       it "returns true on a normal move" do
-        expect(parser.validMoveFormat?("Ne3")).to eq true
+        m = Move.new(Knight.new(:white), "e3")
+        expect(parser.parseMove("Ne3")).to eq m
       end
                                                                          
       it "returns true on a pawn move" do
-        expect(parser.validMoveFormat?("e4")).to eq true
-        expect(parser.validMoveFormat?("Pe3")).to eq true
+        m1 = Move.new(Pawn.new(:white), "e4")
+        m2 = Move.new(Pawn.new(:white), "e3")
+        expect(parser.parseMove("e4")).to eq m1
+        expect(parser.parseMove("Pe3")).to eq m2
       end
                                                                          
       it "return true on a check" do
-        expect(parser.validMoveFormat?("e4+")).to eq true
-        expect(parser.validMoveFormat?("Bb4+")).to eq true
+
+        m1 = Move.new(Pawn.new(:white), "e4")
+        m2 = Move.new(Bishop.new(:white), "b4")
+        expect(parser.parseMove("e4+")).to eq m1
+        expect(parser.parseMove("Bb4+")).to eq m2
       end
                                                                          
       it "returns ture on castling" do
-        expect(parser.validMoveFormat?("o-o")).to eq true
-        expect(parser.validMoveFormat?("o-o-o")).to eq true
+        m1 = Move.new(King.new(:white), "g1")
+        m2 = Move.new(King.new(:white), "c1")
+        expect(parser.parseMove("o-o")).to eq m1
+        expect(parser.parseMove("o-o-o")).to eq m2
       end
                                                                          
       it "returns true on pawn captures" do
-        expect(parser.validMoveFormat?("exd4")).to eq true
+        m1 = Move.new(Pawn.new(:white), "d4")
+        expect(parser.parseMove("exd4")).to eq m1
       end
                                                                          
       it "returns true on promotions" do
-        expect(parser.validMoveFormat?("a8=Q")).to eq true
-        expect(parser.validMoveFormat?("Ph1=N")).to eq true
+        m1 = Move.new(Pawn.new(:white), "a8")
+        m2 = Move.new(Pawn.new(:white), "h1")
+        expect(parser.parseMove("a8=Q")).to eq m1
+        expect(parser.parseMove("Ph1=N")).to eq m2
       end
                                                                          
       it "returns true when two of the same piece can go to a square" do
-        expect(parser.validMoveFormat?("Nd5-e3")).to eq true
+        m1 = Move.new(Knight.new(:white), "e3", "d5")
+        expect(parser.parseMove("Nd5-e3")).to eq m1
       end
     end
                                                                          
     context "when given an invalid move" do
       it " returns on first invalid first character" do
-        expect(parser.validMoveFormat?("Zd4-e3")).to eq false
+        expect(parser.parseMove("Zd4-e3")).to eq false
       end
                                                                          
       it " return false on move too far right" do
-        expect(parser.validMoveFormat?("Ni5")).to eq false
+        expect(parser.parseMove("Ni5")).to eq false
       end
                                                                          
       it " returns false on a move too far up" do
-        expect(parser.validMoveFormat?("Na9")).to eq false
+        expect(parser.parseMove("Na9")).to eq false
       end
                                                                          
       it " returns false on gibberish" do
-        expect(parser.validMoveFormat?("iakjdlsfl;k")).to eq false
+        expect(parser.parseMove("iakjdlsfl;k")).to eq false
       end
                                                                          
       it " returns false on empty input" do
-        expect(parser.validMoveFormat?("")).to eq false
+        expect(parser.parseMove("")).to eq false
       end
                                                                          
       it " returns false with two pawn moves entered" do
-        expect(parser.validMoveFormat?("e4e4")).to eq false
+        expect(parser.parseMove("e4e4")).to eq false
                                                                          
       end
     end

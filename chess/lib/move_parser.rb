@@ -13,21 +13,36 @@ class MoveParser
   # =>  Two of same piece can move to square: Nb4-d3
   # =>  enpassant : exd5  
   # 
-  def validMoveFormat? usersMove
+  def parseMove usersMove, colour=:white
+    return false if usersMove.length < 2
+    @colour = colour
     usersMove = cleanMove(usersMove)
 
     case usersMove.length
     when 2 
-      return validLengthTwo?(usersMove)
+      return false unless validLengthTwo?(usersMove)
+      return lengthTwoMove(usersMove)
 
     when 3
-      return validLengthThree?(usersMove)
+      return false unless validLengthThree?(usersMove)
+      return lengthThreeMove(usersMove)
       
     when 4 
-      return validLengthFour?(usersMove)
+      #note: must be a promotion, so upcae last character 
+      # i.e. a8=q --> a8=Q
+      usersMove = usersMove[0...-1] + usersMove[-1].upcase
+      return false unless validLengthFour?(usersMove)
+      return lengthFourMove(usersMove)
                                                                              
     when 5 
-      validLengthFive?(usersMove)
+
+      if usersMove.include?("=")
+        usersMove = usersMove[0...-1] + usersMove[-1].upcase
+      end
+
+
+      return false unless validLengthFive?(usersMove)
+      return lengthFiveMove(usersMove)
       
     else 
       return false
@@ -36,12 +51,13 @@ class MoveParser
 
   # Gets rid of unnecessary characters used in common notation 
   def cleanMove usersMove
-    usersMove = usersMove.downcase.gsub("x","").gsub("-","").gsub("+","")
+    usersMove = usersMove[0] +
+                usersMove[1..-1].downcase.gsub("x","").gsub("-","").gsub("+","")
   end
 
   #must be a pawn move or short castle
   def validLengthTwo? usersMove
-    return true if usersMove == "oo"
+    return true if usersMove == "oo" || usersMove == "Oo"
     return false unless /^[a-h][1-8]/ =~ usersMove
     return true
   end
@@ -49,25 +65,83 @@ class MoveParser
   #standard move or long caslte or pawn capture
   def validLengthThree? usersMove
     return true if /[a-h][a-h][1-8]/ =~ usersMove
-    return true if usersMove == "ooo"
-    return false unless /^[rnbqkp][a-h][1-8]/ =~ usersMove
+    return true if usersMove == "ooo" || usersMove == "Ooo"
+    return false unless /^[RBNQKP][a-h][1-8]/ =~ usersMove
     return true
   end
 
   
   # must be a promotion
   def validLengthFour? usersMove
-    return false unless /^[a-h][81]=[rnbq]/ =~ usersMove
+    return false unless /^[a-h][81]=[RNBQ]/ =~ usersMove
     return true
   end
 
   # must be two pieces able to move to square or promotion
   def validLengthFive? usersMove
-    if (not /^p[abcedfgh][81]=[rnbq]/ =~ usersMove) &&
-       (not /^[rnbq][a-h][1-8][a-h][1-8]/ =~ usersMove)
+    if (not /^P[abcedfgh][81]=[RNBQ]/ =~ usersMove) &&
+       (not /^[RNBQ][a-h][1-8][a-h][1-8]/ =~ usersMove)
       return false
     else
       return true
+    end
+  end
+
+  #gets the piece fromthe first character
+  def getPiece move
+    case move[0]
+    when /^[Pa-h]/
+      return Pawn.new(@colour)
+    when "R" 
+      return Rook.new(@colour)
+    when "N" 
+      return Knight.new(@colour)
+    when "B"
+      return Bishop.new(@colour)
+    when "Q"
+      return Queen.new(@colour)
+    when "K" 
+      return King.new(@colour)
+    else 
+      return false
+    end
+  end
+
+  # Creates a short castle or pawn move
+  def lengthTwoMove(usersMove)
+    if usersMove == "oo" || usersMove == "Oo"
+      @colour == :white ? to = "g1" : to = "g8"
+      return Move.new(King.new(@colour), to)
+    else
+      to = usersMove
+      return Move.new(Pawn.new(@colour), to)
+    end
+  end
+
+  def lengthThreeMove(usersMove)
+    if usersMove == "ooo" || usersMove == "Ooo"
+      @colour == :white ? to = "c1" : to = "c8"
+      return Move.new(King.new(@colour), to)
+    else
+      to = usersMove[1..2]
+      return Move.new(getPiece(usersMove), to )
+    end
+  end
+
+  #TODO might need to upcase when extracting which piece to promote to
+  def lengthFourMove(usersMove)
+    to = usersMove[0..1]
+    return Move.new(Pawn.new(@colour), to)
+  end
+
+  def lengthFiveMove(usersMove)
+    if usersMove.include?("=")
+      to = usersMove[1..2]
+      return Move.new(Pawn.new(@colour), to)
+    else
+      from = usersMove[1..2]
+      to = usersMove[3..4]
+      return Move.new(getPiece(usersMove), to, from)
     end
   end
 

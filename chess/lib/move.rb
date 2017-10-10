@@ -8,4 +8,23 @@ class Move
     @from = from
   end
 
+  def ==(o)
+    o.class == self.class && o.state == state
+  end
+
+  def eql?(o)
+    return self==(o)
+  end
+
+  def hash
+    state.hash
+  end
+  
+  protected 
+
+  def state
+    [@piece, @to, @from]
+  end
+
+
 end
