@@ -641,6 +641,143 @@ describe ChessRules do
       m1 = Move.new(board, board.getPieceAt("e4"), "e5","e4")
       expect(rules.isValidKingMove?(m1)).to eq false
     end
+
+    context "castling  short" do
+      it " white can castle short " do
+        board.setSquare("e1", King.new(:white, true))
+        board.setSquare("h1", Rook.new(:white, true))
+        m1 = Move.new(board, board.getPieceAt("e1"), "g1")
+        expect(rules.isValidKingMove?(m1)).to eq true
+      end
+
+      it " black can castle short " do
+        board.setSquare("e8", King.new(:black, true))
+        board.setSquare("h8", Rook.new(:black, true))
+        m1 = Move.new(board, board.getPieceAt("e8"), "g8")
+        expect(rules.isValidKingMove?(m1)).to eq true
+      end
+
+      it " white  can't caslte if king has moved " do
+        board.setSquare("e1", King.new(:white, false))
+        board.setSquare("h1", Rook.new(:white, true))
+        m1 = Move.new(board, board.getPieceAt("e1"), "g1")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+                                                      
+      it " black can't castle if king has moved " do
+        board.setSquare("e8", King.new(:black, false))
+        board.setSquare("h8", Rook.new(:black, true))
+        m1 = Move.new(board, board.getPieceAt("e8"), "g8")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+
+      it " white can't castle short if rook has moved " do
+        board.setSquare("e1", King.new(:white, true))
+        board.setSquare("h1", Rook.new(:white, false))
+        m1 = Move.new(board, board.getPieceAt("e1"), "g1")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+                                                      
+      it " black can't castle short if rooks has moved " do
+        board.setSquare("e8", King.new(:black, true))
+        board.setSquare("h8", Rook.new(:black, false))
+        m1 = Move.new(board, board.getPieceAt("e8"), "g8")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+
+      it "cannot castle if in check" do 
+        board.setSquare("e8", Queen.new(:black))
+        board.setSquare("e1", King.new(:white, true))
+        board.setSquare("h1", Rook.new(:white, true))
+        m1 = Move.new(board, board.getPieceAt("e1"), "g1")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+                                                      
+      it " black can't castle short if in check " do
+        board.setSquare("e1", Queen.new(:white))
+        board.setSquare("e8", King.new(:black, true))
+        board.setSquare("h8", Rook.new(:black, true))
+        m1 = Move.new(board, board.getPieceAt("e8"), "g8")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+
+      it "white can't caslte through check " do
+        board.setSquare("f8", Queen.new(:black))
+        board.setSquare("e1", King.new(:white, true))
+        board.setSquare("h1", Rook.new(:white, true))
+        m1 = Move.new(board, board.getPieceAt("e1"), "g1")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+
+      it "white can't caslte through check " do
+        board.setSquare("g8", Queen.new(:black))
+        board.setSquare("e1", King.new(:white, true))
+        board.setSquare("h1", Rook.new(:white, true))
+        m1 = Move.new(board, board.getPieceAt("e1"), "g1")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+
+      it "black can't caslte through check " do
+        board.setSquare("f1", Queen.new(:white))
+        board.setSquare("e8", King.new(:black, true))
+        board.setSquare("h8", Rook.new(:black, true))
+        m1 = Move.new(board, board.getPieceAt("e8"), "g8")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+
+      it "black can't caslte through check " do
+        board.setSquare("g1", Queen.new(:white))
+        board.setSquare("e8", King.new(:black, true))
+        board.setSquare("h8", Rook.new(:black, true))
+        m1 = Move.new(board, board.getPieceAt("e8"), "g8")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+    end
+
+    context "long castle" do
+      it "trueon proper white long castle" do
+        board.setSquare("e1", King.new(:white,true))
+        board.setSquare("a1", Rook.new(:white, true))
+        m1 = Move.new(board, board.getPieceAt("e1"), "c1")
+        expect(rules.isValidKingMove?(m1)).to eq true
+      end
+
+      it "true on proper black long castle" do
+        board.setSquare("e8", King.new(:black,true))
+        board.setSquare("a8", Rook.new(:black, true))
+        m1 = Move.new(board, board.getPieceAt("e8"), "c8")
+        expect(rules.isValidKingMove?(m1)).to eq true
+      end
+
+
+      it "false when in check" do
+        board.setSquare("e1", Queen.new(:white))
+        board.setSquare("e8", King.new(:black,true))
+        board.setSquare("a8", Rook.new(:black, true))
+        m1 = Move.new(board, board.getPieceAt("e8"), "c8")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+
+      it "false when castling through an attack" do
+        board.setSquare("d1", Queen.new(:white))
+        board.setSquare("e8", King.new(:black,true))
+        board.setSquare("a8", Rook.new(:black, true))
+        m1 = Move.new(board, board.getPieceAt("e8"), "c8")
+        expect(rules.isValidKingMove?(m1)).to eq false
+      end
+
+      it "rook can castle through an attack" do
+
+        board.setSquare("b1", Queen.new(:white))
+        board.setSquare("e8", King.new(:black,true))
+        board.setSquare("a8", Rook.new(:black, true))
+        m1 = Move.new(board, board.getPieceAt("e8"), "c8")
+        expect(rules.isValidKingMove?(m1)).to eq true
+      end
+
+    end
+
+
   end
 
   context  "returns array of moves with the .from attribute 
@@ -671,6 +808,7 @@ describe ChessRules do
       end
     end
   end
+
 end
 
 describe Move do

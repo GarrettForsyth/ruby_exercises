@@ -1,9 +1,10 @@
 class Piece
 
-  attr_accessor :colour
+  attr_accessor :colour, :firstMove
 
-  def initialize colour
+  def initialize colour, firstMove=false
     @colour = colour  
+    @firstMove = firstMove
   end
 
   def ==(o)
@@ -27,13 +28,6 @@ class Piece
 end
 
 class Pawn < Piece
-
-  attr_accessor :firstMove
-
-  def initialize colour, firstMove=false
-    @firstMove = firstMove
-    super(colour)
-  end
 
   def draw
     if @colour == :black

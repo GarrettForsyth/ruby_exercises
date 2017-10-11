@@ -112,8 +112,10 @@ class ChessRules
   def isValidKingMove?(move)
     possibleMoves = getPossibleMoves(move) 
     possibleMoves.each do |move|
-      return true if isMoveOneSquareAway?(move) &&
-                     isCaptureOrLandingOnEmptySquare?(move) 
+      return true if ((isMoveOneSquareAway?(move) &&
+                     isCaptureOrLandingOnEmptySquare?(move)) ||
+                     isCastleShort?(move) ||
+                     isCastleLong?(move))
     end
     return false
   end
@@ -122,6 +124,58 @@ class ChessRules
     return (move.to[0].ord - move.from[0].ord).between?(-1,1)   &&
            (move.to[1].to_i - move.from[1].to_i).between?(-1,1) 
   end
+
+  def isCastleShort?(move)
+    if move.piece.colour == :white 
+      from = "e1"; to = "g1"; r = "h1";oc=:black  
+    else
+      from = "e8";to = "g8";r= "h8";oc=:white 
+    end
+
+    return false if move.to != to || move.from != from 
+
+    king = move.board.getPieceAt(from)
+    rook = move.board.getPieceAt(r)
+
+    return false unless king.instance_of?(King) && king.firstMove
+    return false unless rook.instance_of?(Rook) &&  rook.firstMove
+
+    return false if isInCheck?(move.piece.colour, move.board)
+    squaresInbetween = move.board.getSquaresInbetween(move.from, r)
+    squaresInbetween.each do |square|
+      return false if isSquareAttackedBy?(square, oc, move.board)
+    end
+    return true
+  end 
+
+  def isCastleLong?(move)
+    if move.piece.colour == :white 
+      from = "e1"; to = "c1"; r = "a1";oc=:black  
+    else
+      from = "e8";to = "c8";r= "a8";oc=:white 
+    end
+                                                                    
+    return false if move.to != to || move.from != from 
+                                                                    
+    king = move.board.getPieceAt(from)
+    rook = move.board.getPieceAt(r)
+                                                                    
+    return false unless king.instance_of?(King) && king.firstMove
+    return false unless rook.instance_of?(Rook) &&  rook.firstMove
+                                                                    
+    return false if isInCheck?(move.piece.colour, move.board)
+    squaresInbetween = move.board.getSquaresInbetween(move.from, r)
+    # don't include the b file when checking if castling into an attack
+    squaresInbetween[0..-2].each do |square|
+      return false if isSquareAttackedBy?(square, oc, move.board)
+    end
+    return true
+  end 
+
+
+
+
+
 
   def isInCheck?(colour, board)
     kingCoord = board.getCoordOf(King.new(colour))[0]
