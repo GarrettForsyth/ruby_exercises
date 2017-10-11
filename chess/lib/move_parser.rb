@@ -13,9 +13,10 @@ class MoveParser
   # =>  Two of same piece can move to square: Nb4-d3
   # =>  enpassant : exd5  
   # 
-  def parseMove usersMove, colour=:white
+  def parseMove board,usersMove, colour=:white
     return false if usersMove.length < 2
     @colour = colour
+    @board = board
     usersMove = cleanMove(usersMove)
 
     case usersMove.length
@@ -111,37 +112,37 @@ class MoveParser
   def lengthTwoMove(usersMove)
     if usersMove == "oo" || usersMove == "Oo"
       @colour == :white ? to = "g1" : to = "g8"
-      return Move.new(King.new(@colour), to)
+      return Move.new(@board, King.new(@colour), to)
     else
       to = usersMove
-      return Move.new(Pawn.new(@colour), to)
+      return Move.new(@board, Pawn.new(@colour), to)
     end
   end
 
   def lengthThreeMove(usersMove)
     if usersMove == "ooo" || usersMove == "Ooo"
       @colour == :white ? to = "c1" : to = "c8"
-      return Move.new(King.new(@colour), to)
+      return Move.new(@board, King.new(@colour), to)
     else
       to = usersMove[1..2]
-      return Move.new(getPiece(usersMove), to )
+      return Move.new(@board, getPiece(usersMove), to )
     end
   end
 
   #TODO might need to upcase when extracting which piece to promote to
   def lengthFourMove(usersMove)
     to = usersMove[0..1]
-    return Move.new(Pawn.new(@colour), to)
+    return Move.new(@board, Pawn.new(@colour), to)
   end
 
   def lengthFiveMove(usersMove)
     if usersMove.include?("=")
       to = usersMove[1..2]
-      return Move.new(Pawn.new(@colour), to)
+      return Move.new(@board, Pawn.new(@colour), to)
     else
       from = usersMove[1..2]
       to = usersMove[3..4]
-      return Move.new(getPiece(usersMove), to, from)
+      return Move.new(@board, getPiece(usersMove), to, from)
     end
   end
 

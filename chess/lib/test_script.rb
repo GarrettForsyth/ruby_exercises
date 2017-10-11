@@ -15,18 +15,18 @@ b.setSquare("b3", p)
 b.setSquare("b1", n)
 b.setSquare("e8", k)
 
-m = Move.new(q, "e8")
-m2 = Move.new(p, "a3")
-m3 = Move.new(n, "c3")
+m = Move.new(b, q, "e8")
+m2 = Move.new(b, p, "a3")
+m3 = Move.new(b, n, "c3")
 
-puts "valid queen move." if r.isValidQueenMove? m, b
-puts "legal queen move."  if  r.isLegalMove? m, b
+puts "valid queen move." if r.isValidQueenMove? m
+puts "legal queen move."  if  r.isLegalMove? m
 
-puts "valid pawn move." if r.isValidPawnMove? m2, b
-puts "legal pawn move."  if  r.isLegalMove? m2, b
+puts "valid pawn move." if r.isValidPawnMove? m2
+puts "legal pawn move."  if  r.isLegalMove? m2
 
-puts "valid knight move." if r.isValidKnightMove? m3, b
-puts "legal Knight move."  if  r.isLegalMove? m3, b
+puts "valid knight move." if r.isValidKnightMove? m3
+puts "legal Knight move."  if  r.isLegalMove? m3
 
 puts "queen attacks e8" if r.isSquareAttackedBy?("e8", :white, b)
 puts b.getCoordOf(Pawn.new(:white))

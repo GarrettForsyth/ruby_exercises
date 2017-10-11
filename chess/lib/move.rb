@@ -1,11 +1,12 @@
 class Move
 
-  attr_accessor :piece, :to, :from
+  attr_accessor :piece, :to, :from, :board
 
-  def initialize(piece, to, from=nil)
+  def initialize(board, piece, to, from=nil)
     @piece = piece
     @to = to
     @from = from
+    @board = board
   end
 
   def ==(o)
@@ -23,7 +24,7 @@ class Move
   protected 
 
   def state
-    [@piece, @to, @from]
+    [@board, @piece, @to, @from]
   end
 
 

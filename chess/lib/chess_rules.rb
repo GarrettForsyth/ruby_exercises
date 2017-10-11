@@ -3,81 +3,81 @@ require "~/the_odin_project/ruby_exercises/chess/lib/move.rb"
 
 class ChessRules
 
-  def isLegalMove?(move,board)
+  def isLegalMove?(move)
     case move.piece
     when Pawn
-      return isValidPawnMove?(move,board)
+      return isValidPawnMove?(move)
     when Knight
-      return isValidKnightMove?(move,board)
+      return isValidKnightMove?(move)
     when Rook
-      return isValidRookMove?(move, board)
+      return isValidRookMove?(move)
     when Bishop
-      return isValidBishopMove?(move, board)
+      return isValidBishopMove?(move)
     when Queen
-      return isValidQueenMove?(move, board)
+      return isValidQueenMove?(move)
     when King
-      return isValidKingMove?(move, board)
+      return isValidKingMove?(move)
     else
       return false
     end
   end
 
-  def isValidPawnMove?(move, board)
-    possibleMoves = getPossibleMoves(move, board)
+  def isValidPawnMove?(move)
+    possibleMoves = getPossibleMoves(move)
     dir = move.piece.colour == :white ? 1 : -1 # pawns can only move forward
 
     possibleMoves.each do |move|
-      return true if isLegalOneSquarePawnMove?(board, move, dir)
-      return true if isLegalTwoSquarePawnMove?(board, move, dir)
-      return true if isLegalPawnCapture?(board,move, dir)
+      return true if isLegalOneSquarePawnMove?(move, dir)
+      return true if isLegalTwoSquarePawnMove?( move, dir)
+      return true if isLegalPawnCapture?(move, dir)
     end
     return false
   end
 
-  def isLegalOneSquarePawnMove?(board, move, dir)
+  def isLegalOneSquarePawnMove?(move, dir)
      return dir*(move.to[1].to_i - move.from[1].to_i) == 1 &&  # one row difference     
             move.to[0] == move.from[0] &&                      # same column
-            isLandingOnEmptySquare?(board,move)                # destination unoccupied
+            isLandingOnEmptySquare?(move)                # destination unoccupied
   end
 
-  def isLegalTwoSquarePawnMove?(board, move, dir)
+  def isLegalTwoSquarePawnMove?(move, dir)
     return dir*(move.to[1].to_i - move.from[1].to_i) == 2 &&   # two row difference     
            move.to[0] == move.from[0] &&                       # same column
-           isLandingOnEmptySquare?(board,move) &&              # destination unoccupied
-           isNotImpeded?(move,board) &&                        # not blocked
+           isLandingOnEmptySquare?(move) &&              # destination unoccupied
+           isNotImpeded?(move) &&                        # not blocked
            move.piece.firstMove                                # pawn's first move
   end
 
-  def isLegalPawnCapture?(board, move, dir)
+  def isLegalPawnCapture?(move, dir)
     return ((move.to[0].ord - move.from[0].ord).abs == 1) &&     # one row up or down 
            (dir*(move.to[1].to_i - move.from[1].to_i) == 1) &&   # one col difference
-           isCapture?(board,move)
+           isCapture?(move)
   end
 
-  def isValidRookMove?(move, board)
-    possibleMoves = getPossibleMoves(move,board)
+  def isValidRookMove?(move)
+    possibleMoves = getPossibleMoves(move)
     possibleMoves.each do |move|
-      return true if isMoveHorizontalOrVerticalLine?(board,move) &&
-                     isNotImpeded?(move, board) && 
-                     isCaptureOrLandingOnEmptySquare?(board,move)
+      return true if isMoveHorizontalOrVerticalLine?(move) &&
+                     isNotImpeded?(move) && 
+                     isCaptureOrLandingOnEmptySquare?(move)
     end
     return false
   end
 
-  def isMoveHorizontalOrVerticalLine?(board,move)
+  def isMoveHorizontalOrVerticalLine?(move)
     return move.to[0] == move.from[0] || move.to[1] == move.from[1]
   end
 
-  def isValidKnightMove?(move, board)
-    possibleMoves = getPossibleMoves(move, board)
+  def isValidKnightMove?(moved)
+    possibleMoves = getPossibleMoves(moved)
     possibleMoves.each do |move|
-      return true if isMoveLShaped?(board,move) && 
-                     isCaptureOrLandingOnEmptySquare?(board,move)
+      return true if isMoveLShaped?(move) && 
+                     isCaptureOrLandingOnEmptySquare?(move)
     end
     return false
   end
 
-  def isMoveLShaped?(board,move)
+  def isMoveLShaped?(move)
     return ((move.to[1].to_i - move.from[1].to_i).abs == 2 &&
             (move.to[0].ord - move.from[0].ord).abs == 1) ||
                                                             
@@ -85,40 +85,40 @@ class ChessRules
             (move.to[1].to_i - move.from[1].to_i).abs == 1) 
   end
 
-  def isValidBishopMove?(move, board)
-    possibleMoves = getPossibleMoves(move, board)
+  def isValidBishopMove?(move)
+    possibleMoves = getPossibleMoves(move)
     possibleMoves.each do |move|
-      return true if isMoveAlongDiagonal?(board,move) &&
-                     isNotImpeded?(move, board) && 
-                     isCaptureOrLandingOnEmptySquare?(board,move)
+      return true if isMoveAlongDiagonal?(move) &&
+                     isNotImpeded?(move) && 
+                     isCaptureOrLandingOnEmptySquare?(move)
     end
     return false
   end
 
-  def isMoveAlongDiagonal?(board, move)
+  def isMoveAlongDiagonal?( move)
     return (move.to[0].ord - move.from[0].ord).abs == 
            (move.to[1].to_i - move.from[1].to_i).abs
   end
 
 
-  def isValidQueenMove?(move, board)
-    possibleMoves = getPossibleMoves(move, board)
+  def isValidQueenMove?(move)
+    possibleMoves = getPossibleMoves(move)
     possibleMoves.each do |move|
-      return true if (isValidRookMove?(move, board) || isValidBishopMove?(move,board))
+      return true if (isValidRookMove?(move) || isValidBishopMove?(move))
     end
     return false
   end
 
-  def isValidKingMove?(move, board)
-    possibleMoves = getPossibleMoves(move, board) 
+  def isValidKingMove?(move)
+    possibleMoves = getPossibleMoves(move) 
     possibleMoves.each do |move|
-      return true if isMoveOneSquareAway?(board, move) &&
-                     isCaptureOrLandingOnEmptySquare?(board,move) 
+      return true if isMoveOneSquareAway?(move) &&
+                     isCaptureOrLandingOnEmptySquare?(move) 
     end
     return false
   end
 
-  def isMoveOneSquareAway?(board, move)
+  def isMoveOneSquareAway?(move)
     return (move.to[0].ord - move.from[0].ord).between?(-1,1)   &&
            (move.to[1].to_i - move.from[1].to_i).between?(-1,1) 
   end
@@ -133,44 +133,46 @@ class ChessRules
   def isSquareAttackedBy?(coord,colour, board)
     board.pieces[colour].each do |pieceType, listOfCoord|
       listOfCoord.each do |fromCoord, piece| 
-        m = Move.new(piece, coord, fromCoord)
-        return true if isLegalMove?(m, board)
+        m = Move.new(board, piece, coord, fromCoord)
+        return true if isLegalMove?(m)
       end
     end
     return false
   end
 
-  def isCaptureOrLandingOnEmptySquare?(board, move)
-      return isLandingOnEmptySquare?(board, move) || isCapture?(board,move)  
+  def isCaptureOrLandingOnEmptySquare?(move)
+      return isLandingOnEmptySquare?(move) || isCapture?(move)  
 
   end
 
-  def isCapture?(board,move)
+  def isCapture?(move)
+    board = move.board
     return board.getSquare(move.to).occupied? == true &&
            board.getSquare(move.to).occupancy.colour != move.piece.colour
   end
 
-  def isLandingOnEmptySquare?(board, move)
-      return board.getSquare(move.to).occupied? == false  
+  def isLandingOnEmptySquare?(move)
+      return move.board.getSquare(move.to).occupied? == false  
   end
 
   # Returns true if there are no pieces blocking the move
-  def isNotImpeded?(move, board)
-    coords = board.getSquaresInbetween(move.from,move.to)
+  def isNotImpeded?(move)
+    coords = move.board.getSquaresInbetween(move.from,move.to)
     coords.each do |coord|
-      return false if board.getSquare(coord).occupied?
+      return false if move.board.getSquare(coord).occupied?
     end
     return true
   end
 
 
   # Returns a list of possible moves that move.piece could make on board 
-  def getPossibleMoves(move, board)
+  def getPossibleMoves(move)
+    board = move.board
     possibleMoves = []
     if move.from.nil?
-      possibleFrom = getPossibleFrom(move,board)
+      possibleFrom = getPossibleFrom(move)
       possibleFrom.each do |from|
-        possibleMove = Move.new(move.piece, move.to, from)
+        possibleMove = Move.new(board, move.piece, move.to, from)
         possibleMoves << possibleMove
       end
     else
@@ -187,9 +189,9 @@ class ChessRules
   # Tries to infer where piece is coming from 
   # Returns an array of coordinates of squares that contain move.piece
   # on board
-  def getPossibleFrom move,board
+  def getPossibleFrom move
     possibleFrom = []
-    board.pieces[move.piece.colour][move.piece.class.to_s.to_sym].each do |coord, piece|
+    move.board.pieces[move.piece.colour][move.piece.class.to_s.to_sym].each do |coord, piece|
       possibleFrom << coord
     end
     possibleFrom
