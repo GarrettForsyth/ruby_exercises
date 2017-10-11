@@ -642,7 +642,7 @@ describe ChessRules do
       expect(rules.isValidKingMove?(m1, board)).to eq false
     end
   end
-    
+
   context  "returns array of moves with the .from attribute 
                          of move inferred from pieces on the board" do
     it " returns 2 knight moves " do
@@ -655,7 +655,21 @@ describe ChessRules do
       end
       expect(possibleFroms).to eq expectedFroms 
     end
+  end
 
+  describe "#isInCheck?" do
+    context "given a colour" do
+      it "returns true if that colours king is attacked" do
+        board.setSquare("e8",King.new(:black))
+        board.setSquare("e1",Queen.new(:white))
+        expect(rules.isInCheck?(:black, board)).to eq true
+      end
+      it "returns false if that colours king is not attacked" do  
+        board.setSquare("e8",King.new(:black))
+        board.setSquare("d1",Queen.new(:white))
+        expect(rules.isInCheck?(:black, board)).to eq false
+      end
+    end
   end
 end
 

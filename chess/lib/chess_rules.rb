@@ -3,6 +3,25 @@ require "~/the_odin_project/ruby_exercises/chess/lib/move.rb"
 
 class ChessRules
 
+  def isLegalMove?(move,board)
+    case move.piece
+    when Pawn
+      return isValidPawnMove?(move,board)
+    when Knight
+      return isValidKnightMove?(move,board)
+    when Rook
+      return isValidRookMove?(move, board)
+    when Bishop
+      return isValidBishopMove?(move, board)
+    when Queen
+      return isValidQueenMove?(move, board)
+    when King
+      return isValidKingMove?(move, board)
+    else
+      return false
+    end
+  end
+
   def isValidPawnMove?(move, board)
     possibleMoves = getPossibleMoves(move, board)
     dir = move.piece.colour == :white ? 1 : -1 # pawns can only move forward
@@ -85,7 +104,7 @@ class ChessRules
   def isValidQueenMove?(move, board)
     possibleMoves = getPossibleMoves(move, board)
     possibleMoves.each do |move|
-      return true if (isValidRookMove || isValidBishopMove)
+      return true if (isValidRookMove?(move, board) || isValidBishopMove?(move,board))
     end
     return false
   end
@@ -102,6 +121,23 @@ class ChessRules
   def isMoveOneSquareAway?(board, move)
     return (move.to[0].ord - move.from[0].ord).between?(-1,1)   &&
            (move.to[1].to_i - move.from[1].to_i).between?(-1,1) 
+  end
+
+  def isInCheck?(colour, board)
+    kingCoord = board.getCoordOf(King.new(colour))[0]
+    colour == :white ? opponentColour = :black : opponentColour = :white
+    return isSquareAttackedBy?(kingCoord, opponentColour.to_sym, board)
+  end
+
+  # Iterates over all of a colours  pieces to see if any can legally attack a square
+  def isSquareAttackedBy?(coord,colour, board)
+    board.pieces[colour].each do |pieceType, listOfCoord|
+      listOfCoord.each do |fromCoord, piece| 
+        m = Move.new(piece, coord, fromCoord)
+        return true if isLegalMove?(m, board)
+      end
+    end
+    return false
   end
 
   def isCaptureOrLandingOnEmptySquare?(board, move)

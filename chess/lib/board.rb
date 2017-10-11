@@ -57,9 +57,10 @@ class Board
     getSquare(coordiante).occupancy
   end
 
-  def setSquare(coordiante, piece)
-    index = parse(coordiante)
+  def setSquare(coord, piece)
+    index = parse(coord)
     @squares[index].occupancy = piece
+    @pieces[piece.colour][piece.class.to_s.to_sym][coord] ||= piece  
   end
 
   def parse(coordiante)
@@ -96,9 +97,12 @@ class Board
     puts "|"
   end
 
+  def createPiece(colour, pieceType, coord)
+    @pieces[colour]
+  end
+
   def setPiece(colour, pieceType, coord)
     newPiece = pieceType.new(colour)
-    @pieces[colour][pieceType.to_s.to_sym][coord] ||= newPiece 
     setSquare(coord, newPiece)
   end
 
@@ -223,6 +227,15 @@ class Board
       (c1-7).step(c2+7,-7) {|i| squares << unParseToCoord(i) }
       return squares
     end
+  end
+
+  # Returns an array of the coordinates that match piece
+  def getCoordOf(piece)
+    coords = []
+    @pieces[piece.colour][piece.class.to_s.to_sym].each do |coord, piece|
+      coords << coord
+    end
+    return coords
   end
 end
 
