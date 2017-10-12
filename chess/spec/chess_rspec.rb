@@ -29,10 +29,6 @@ describe Chess do
       end
     end
 
-    it "it creates a chess board" do
-      expect(game.board).to be_an_instance_of(Board)
-    end
-
     it "has a set of rules" do
       expect(game.rules).to be_an_instance_of(ChessRules)
     end
@@ -41,6 +37,8 @@ describe Chess do
   describe "#startGame" do
 
     it "draws the board" do
+
+      allow(game).to receive(:gets) {"e4"}
       expect(game).to receive(:drawBoard)
       game.startGame
     end
@@ -64,9 +62,23 @@ describe Chess do
       game.promptMove
     end
 
-    xit "validates the users response" do
-      expect(game).to receive(:validMove?)
-      game.promptMove
+    it "reprompts until the user gives a valid response" do
+      allow(game).to receive(:gets) do
+        @counter ||= 0
+        response = if @counter < 3
+                     "BAD INPUT"
+                   else
+                     "e4"
+                   end
+        @counter +=1
+        response
+      end
+      expectedOutput = "White's move: \n" +
+                       "Illegal move.\nWhite's move: \n" +
+                       "Illegal move.\nWhite's move: \n" + 
+                       "Illegal move.\nWhite's move: \n" +
+                       "Black's move: "
+      expect{ game.promptMove }.to output(expectedOutput).to_stdout
     end
   end
 
@@ -165,6 +177,17 @@ describe Board do
     it "returns array of squares between a8 and h1" do
       expecetdSquares = ["b7","c6","d5","e4","f3","g2",]              
       expect(board.getSquaresInbetween("a8","h1")).to eq expecetdSquares
+    end
+  end
+
+  describe "#move" do
+    it "creates a new board with the mvoe" do
+      originalBoard = Board.new
+      originalBoard.setSquare("a2", Pawn.new(:white, true))
+      expectedBoard = Board.new
+      expectedBoard.setSquare("a4",Pawn.new(:white, false))
+      m = Move.new( originalBoard, originalBoard.getPieceAt("a2"), "a4", "a2")
+      expect(originalBoard.move(m)).to eql(expectedBoard)
     end
   end
 end

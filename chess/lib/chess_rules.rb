@@ -27,9 +27,9 @@ class ChessRules
     dir = move.piece.colour == :white ? 1 : -1 # pawns can only move forward
 
     possibleMoves.each do |move|
-      return true if isLegalOneSquarePawnMove?(move, dir)
-      return true if isLegalTwoSquarePawnMove?( move, dir)
-      return true if isLegalPawnCapture?(move, dir)
+      return move if isLegalOneSquarePawnMove?(move, dir)
+      return move if isLegalTwoSquarePawnMove?( move, dir)
+      return move if isLegalPawnCapture?(move, dir)
     end
     return false
   end
@@ -57,7 +57,7 @@ class ChessRules
   def isValidRookMove?(move)
     possibleMoves = getPossibleMoves(move)
     possibleMoves.each do |move|
-      return true if isMoveHorizontalOrVerticalLine?(move) &&
+      return move if isMoveHorizontalOrVerticalLine?(move) &&
                      isNotImpeded?(move) && 
                      isCaptureOrLandingOnEmptySquare?(move)
     end
@@ -71,7 +71,7 @@ class ChessRules
   def isValidKnightMove?(moved)
     possibleMoves = getPossibleMoves(moved)
     possibleMoves.each do |move|
-      return true if isMoveLShaped?(move) && 
+      return move if isMoveLShaped?(move) && 
                      isCaptureOrLandingOnEmptySquare?(move)
     end
     return false
@@ -88,7 +88,7 @@ class ChessRules
   def isValidBishopMove?(move)
     possibleMoves = getPossibleMoves(move)
     possibleMoves.each do |move|
-      return true if isMoveAlongDiagonal?(move) &&
+      return move if isMoveAlongDiagonal?(move) &&
                      isNotImpeded?(move) && 
                      isCaptureOrLandingOnEmptySquare?(move)
     end
@@ -104,7 +104,7 @@ class ChessRules
   def isValidQueenMove?(move)
     possibleMoves = getPossibleMoves(move)
     possibleMoves.each do |move|
-      return true if (isValidRookMove?(move) || isValidBishopMove?(move))
+      return move if (isValidRookMove?(move) || isValidBishopMove?(move))
     end
     return false
   end
@@ -112,7 +112,7 @@ class ChessRules
   def isValidKingMove?(move)
     possibleMoves = getPossibleMoves(move) 
     possibleMoves.each do |move|
-      return true if ((isMoveOneSquareAway?(move) &&
+      return move if ((isMoveOneSquareAway?(move) &&
                      isCaptureOrLandingOnEmptySquare?(move)) ||
                      isCastleShort?(move) ||
                      isCastleLong?(move))
@@ -226,7 +226,7 @@ class ChessRules
     if move.from.nil?
       possibleFrom = getPossibleFrom(move)
       possibleFrom.each do |from|
-        possibleMove = Move.new(board, move.piece, move.to, from)
+        possibleMove = Move.new(board, move.board.getSquare(from).occupancy, move.to, from)
         possibleMoves << possibleMove
       end
     else
@@ -234,6 +234,7 @@ class ChessRules
       if(board.getSquare(move.from).occupied? &&
          board.getSquare(move.from).occupancy.class == move.piece.class &&
          board.getSquare(move.from).occupancy.colour == move.piece.colour)
+         move.piece = move.board.getSquare(move.from).occupancy
          possibleMoves << move
       end
     end

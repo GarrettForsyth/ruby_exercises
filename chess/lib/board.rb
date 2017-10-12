@@ -5,6 +5,7 @@
 # To get a board with the pieces in the starting position, call #setStartingPosition
 
 require "~/the_odin_project/ruby_exercises/chess/lib/piece.rb"
+require "~/the_odin_project/ruby_exercises/chess/lib/chess_rules.rb"
 class Board
 
   NUMBER_OF_COLUMNS = 8
@@ -21,6 +22,7 @@ class Board
 
     @pieces = pieces
     @pieces ||= createPieceHash
+    @rules = ChessRules.new
   end
 
   def createPieceHash
@@ -60,7 +62,8 @@ class Board
   def setSquare(coord, piece)
     index = parse(coord)
     @squares[index].occupancy = piece
-    @pieces[piece.colour][piece.class.to_s.to_sym][coord] ||= piece  
+    @pieces[piece.colour][piece.class.to_s.to_sym][coord] ||= 
+      piece  unless piece.nil?
   end
 
   def parse(coordiante)
@@ -102,7 +105,7 @@ class Board
   end
 
   def setPiece(colour, pieceType, coord)
-    newPiece = pieceType.new(colour)
+    newPiece = pieceType.new(colour,true)
     setSquare(coord, newPiece)
   end
 
@@ -237,6 +240,59 @@ class Board
     end
     return coords
   end
+
+  # returns new instance of board reflecting users move
+  def move(move)
+
+    
+    
+    
+    
+
+    if @rules.isCastleShort?(move)
+      if move.piece.colour == :white
+        r = "h1" ; r2 = "f1";
+      else
+        r = "h8"; r2= "f8";
+      end
+      m = Move.new(self, self.getSquare(r).occupancy, r2, r)
+      self.move(m)
+    elsif @rules.isCastleLong?(move)
+      if move.piece.colour == :white
+        r = "a1" ; r2 = "d1";
+      else
+        r = "a8"; r2= "d8";
+      end
+      m = Move.new(self, self.getSquare(r).occupancy, r2, r)
+      self.move(m)
+    end
+
+    @pieces[move.piece.colour][move.piece.class.to_s.to_sym].delete(move.from)
+    setSquare(move.from, nil)
+    move.piece.firstMove = false
+    setSquare(move.to, move.piece)
+
+    return self
+  end
+
+  def==(o)
+    o.class == self.class && o.state == state
+  end
+
+  def eql?(o)
+    return self==o
+  end
+
+  def hash
+    state.hash
+  end
+
+  protected
+
+  def state
+    [@squares, @pieces]
+  end
+
 end
 
 # This class models a single square ona  chess board
@@ -259,6 +315,24 @@ class Square
     if occupied? then return @occupancy.draw
     else return " "
     end
+  end
+
+  def ==(o)
+    o.class == self.class && o.state == self.state
+  end
+
+  def eql?(o)
+    return self==o
+  end
+
+  def hash
+    state.hash
+  end
+
+  protected
+
+  def state
+    [@occupancy]
   end
 
 end

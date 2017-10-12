@@ -1,6 +1,20 @@
+require '~/the_odin_project/ruby_exercises/chess/lib/chess_rules.rb'
+
 # This class attempts to parse a string to create a Move Object
 #
 class MoveParser
+
+  def initialize
+    @rules = ChessRules.new
+  end
+
+  def parseMove(board, usersMove, colour=:white)
+    validFormatMove = formatMove(board, usersMove, colour)
+    return false if validFormatMove == false
+    legalMove = @rules.isLegalMove?(validFormatMove)
+    return legalMove if legalMove
+    return false
+  end
 
   # Cases for valid moves
   #
@@ -13,7 +27,7 @@ class MoveParser
   # =>  Two of same piece can move to square: Nb4-d3
   # =>  enpassant : exd5  
   # 
-  def parseMove board,usersMove, colour=:white
+  def formatMove(board,usersMove, colour=:white)
     return false if usersMove.length < 2
     @colour = colour
     @board = board

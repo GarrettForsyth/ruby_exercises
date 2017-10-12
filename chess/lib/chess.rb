@@ -1,19 +1,27 @@
 require "~/the_odin_project/ruby_exercises/chess/lib/board.rb"
 require "~/the_odin_project/ruby_exercises/chess/lib/chess_rules.rb"
+require "~/the_odin_project/ruby_exercises/chess/lib/move_parser.rb"
 class Chess
 
-  attr_accessor :board, :rules
+  attr_accessor :game, :rules, :gameOver, :moveParser
 
   def initialize
-    @board = Board.new
+    @game = []
     @rules = ChessRules.new
+    @moveParser = MoveParser.new
     @ply = 0 # In chess, a 'ply' is like 'half a move'
+    @gameOver = false
+  end
+
+  def board
+    @game[-1] 
   end
 
   def startGame
+    @board = Board.new
     @board.setPiecesAtStartingPositions
-    drawBoard
-    promptMove
+    @game << board
+    turnPhase
   end
 
   def getSquare(coordiante)
@@ -28,9 +36,31 @@ class Chess
     @board.draw
   end
 
+  def turnPhase
+
+    while not @gameOver do
+      drawBoard
+      move = promptMove
+      @game << updateBoard(move)
+      @gameOver = gameOver?
+      @ply += 1
+    end
+
+    puts "Thanks for playing!"
+  end
+
   def promptMove
-    print "#{whosTurn}'s move: "
-    usersMove = gets
+    validMove = false
+    while not validMove do
+      print "#{whosTurn}'s move: "
+      usersMove = gets.chomp!
+      validMove = @moveParser.parseMove(@board,
+                                        usersMove, 
+                                        whosTurn.downcase.to_sym)
+      
+      puts "Invalid move." unless validMove
+    end
+    validMove
   end
 
   def whosTurn
@@ -39,5 +69,13 @@ class Chess
     end
   end
 
+  def gameOver?
+    false
+  end
+
+  def updateBoard(move)
+    puts move.from
+    @board.move(move)
+  end
 
 end
